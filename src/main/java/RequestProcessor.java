@@ -34,7 +34,6 @@ class RequestProcessor implements Runnable {
         String[] urlParts = url.split(" ");
         if (urlParts.length > 1) {
             String query = urlParts[0] ;
-            System.out.println(query);
             // separate the key and value pair and put into the object
             for (String param : query.split("&")) {
                 String[] pair = param.split("=");
@@ -47,7 +46,6 @@ class RequestProcessor implements Runnable {
                 String value = "";
                 if (pair.length > 1) {
                     value = pair[1];
-                    System.out.println("Value" + pair[1]);
                 }
                 List<String> values = params.get(key);
 
@@ -67,60 +65,52 @@ class RequestProcessor implements Runnable {
         String url = null;
         try {
             url = in.readLine();
+            // Discard first 5 characters for the route
+            String urlRoute = url.substring(5);
+
+            if (!url.substring(0,5).toUpperCase().equals("GET /")){
+                System.out.println("Client required wrong route");
+            } else {
+                Map<String, List<String>> params = this.getQueryParams(urlRoute);
+                if ((String.valueOf(params.get("leftOperand").get(0)) == "") || (String.valueOf(params.get("rightOperand").get(0)) == "") || (params.get("operation").get(0).equals("undefined"))) {
+                    System.out.println("At least one of the required params was empty");
+                } else {
+                    if (isNumeric(String.valueOf(params.get("leftOperand").get(0))) && isNumeric(String.valueOf(params.get("rightOperand").get(0)))) {
+                        float leftNum = Float.parseFloat(String.valueOf(params.get("leftOperand").get(0)));
+                        float rightNum = Float.parseFloat(String.valueOf(params.get("rightOperand").get(0)));
+                        String operation = String.valueOf(params.get("operation").get(0));
+                        float result = 0;
+
+                        if (operation.equals("+")) {
+                            result = leftNum + rightNum;
+                        } else if (operation.equals("-")) {
+                            result = leftNum - rightNum;
+                        } else if (operation.equals("*")) {
+                            result = leftNum * rightNum;
+                        } else if (operation.equals("/")) {
+                            result = leftNum / rightNum;
+                        } else if (operation.equals("%25")) {
+                            operation = "%";
+                            result = leftNum % rightNum;
+                        }
+                        // mock-up JSON object to send to client
+                        jsonObject.put("Expression", leftNum + " " + operation + " " + rightNum);
+                        jsonObject.put("Result", result);
+                    } else {
+                        System.out.println("At least one of the required params was not parsable");
+                    }
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // Discard first 5 characters for the route
-        String urlRoute = url.substring(5);
 
-        if (!url.substring(0,5).toUpperCase().equals("GET /")){
-            System.out.println("Client required wrong route");
-        } else {
-            Map<String, List<String>> params = this.getQueryParams(urlRoute);
-            if ((String.valueOf(params.get("leftOperand").get(0)) == "") || (String.valueOf(params.get("rightOperand").get(0)) == "") || (params.get("operation").get(0).equals("undefined"))) {
-                System.out.println("At least one of the required params was empty");
-            } else {
-                if (isNumeric(String.valueOf(params.get("leftOperand").get(0))) && isNumeric(String.valueOf(params.get("rightOperand").get(0)))) {
-                    float leftNum = Float.parseFloat(String.valueOf(params.get("leftOperand").get(0)));
-                    float rightNum = Float.parseFloat(String.valueOf(params.get("rightOperand").get(0)));
-                    String operation = String.valueOf(params.get("operation").get(0));
-                    float result = 0;
-
-                    if (operation.equals("+")) {
-                        result = leftNum + rightNum;
-                    } else if (operation.equals("-")) {
-                        result = leftNum - rightNum;
-                    } else if (operation.equals("*")) {
-                        result = leftNum * rightNum;
-                    } else if (operation.equals("/")) {
-                        result = leftNum / rightNum;
-                    } else if (operation.equals("%25")) {
-                        operation = "%";
-                        result = leftNum % rightNum;
-                    }
-                    // mock-up JSON object to send to client
-                    System.out.println(result);
-                    jsonObject.put("Expression", leftNum + " " + operation + " " + rightNum);
-                    jsonObject.put("Result", result);
-                } else {
-                    System.out.println("At least one of the required params was not parsable");
-                }
-            }
-        }
 
 //end of your code
         String response = msgToClient + jsonObject.toString();
         try {
             os.write(response.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
             os.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
