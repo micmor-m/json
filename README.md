@@ -30,5 +30,5 @@ the Server will respond and send back the result in JSON format with the followi
 ```
 
 - If a different route is requested, the server will return an empty JSON string;
-- If one or more of the required parameter are missing, the server will return an empty JSON string;
+- If one or more of the required parameters are missing, the server will return an empty JSON string;
 - If one or more of the parameters are not parsable to number, the server will return an empty JSON string;
