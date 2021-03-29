@@ -15,7 +15,7 @@ JAVA Server API has been developed and tested using the following:
 
 - When a client makes a GET request to the route "/" with the correct parameters format:
 ```
- GET /?leftOperand=[val1]&rightOperand=[val2]&operation=[operationSymbol]
+ GET /leftOperand=[val1]&rightOperand=[val2]&operation=[operationSymbol]
 ```
 
 the Server will respond and send back the result in JSON format with the following structure:
