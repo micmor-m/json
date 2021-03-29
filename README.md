@@ -3,6 +3,8 @@
 JAVA Server API is a single route API "GET / " that expects to receive by URI parameters two numbers and an operation.
 The server sends back the result in JSON format.
 
+The client to use with JAVA Server API is available at this link: [Calculator FrontEnd](https://github.com/micmor-m/calculatorFE)
+
 ## Development environment
 
 JAVA Server API has been developed and tested using the following:
