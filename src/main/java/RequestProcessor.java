@@ -66,31 +66,34 @@ class RequestProcessor implements Runnable {
                     }
                     values.add(value);
                 }
-                System.out.println(params);
             }
 
+            if ((String.valueOf(params.get("leftOperand").get(0)) == "") || (String.valueOf(params.get("rightOperand").get(0)) == "") || (params.get("operation").get(0).equals("undefined"))) {
+                System.out.println("At least one of the required params was empty");
+
+            } else {
             float leftNum = Float.parseFloat(String.valueOf(params.get("leftOperand").get(0)));
             float rightNum = Float.parseFloat(String.valueOf(params.get("rightOperand").get(0)));
             String operation = String.valueOf(params.get("operation").get(0));
             float result = 0;
 
-            if (operation.equals("+")) {
-                result = leftNum + rightNum;
-            } else if (operation.equals("-")) {
-                result = leftNum - rightNum;
-            } else if (operation.equals("*")) {
-                result = leftNum * rightNum;
-            } else if (operation.equals("/")) {
-                result = leftNum / rightNum;
-            } else if (operation.equals("%25")) {
-                operation = "%";
-                result = leftNum % rightNum;
+                if (operation.equals("+")) {
+                    result = leftNum + rightNum;
+                } else if (operation.equals("-")) {
+                    result = leftNum - rightNum;
+                } else if (operation.equals("*")) {
+                    result = leftNum * rightNum;
+                } else if (operation.equals("/")) {
+                    result = leftNum / rightNum;
+                } else if (operation.equals("%25")) {
+                    operation = "%";
+                    result = leftNum % rightNum;
+                }
+                // mock-up JSON object to send to client
+                System.out.println(result);
+                jsonObject.put("Expression", leftNum + " " + operation + " " + rightNum);
+                jsonObject.put("Result", result);
             }
-
-            // mock-up JSON object to send to client
-            System.out.println(result);
-            jsonObject.put("Expression", leftNum + " " + operation + " " + rightNum);
-            jsonObject.put("Result", result);
         } catch (IOException e) {
             e.printStackTrace();
         }
